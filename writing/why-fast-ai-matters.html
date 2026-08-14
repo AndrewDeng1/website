@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Fast AI Matters — Andrew Deng</title>
+    <meta name="description" content="If ChatGPT already writes faster than you can read, why does AI need to be any faster?">
+    <link rel="stylesheet" href="../style.css">
+    <script src="../theme.js"></script>
+</head>
+<body>
+    <div id="maincontent" class="post">
+        <header class="site-header">
+            <div class="header-top">
+                <h2><a class="site-name" href="../index.html">Andrew Deng</a></h2>
+                <button id="theme-toggle" class="theme-toggle" type="button">light mode</button>
+            </div>
+            <nav class="tabs">
+                <a class="tab" href="../index.html">home</a>
+                <a class="tab active" href="index.html">writing</a>
+            </nav>
+        </header>
+
+        <h2 class="post-title">Why Fast AI Matters</h2>
+        <p class="subtitle">If ChatGPT already writes faster than you can read, why does AI need to be any faster?</p>
+
+        <p>A few months ago, while I was in the middle of my internship at Cerebras Systems, my dad asked me what my company did. I responded, &ldquo;They manufacture hardware chips that make AI models like ChatGPT run faster.&rdquo; He said, &ldquo;Why does that matter? I already can&rsquo;t read as fast as ChatGPT generates text.&rdquo; His response made me realize that most people don&rsquo;t understand the importance of speed in AI. If models already respond faster than you can read, what is there left to improve?</p>
+
+        <p>Most users of ChatGPT probably don&rsquo;t think speed is one of AI&rsquo;s biggest problems. You enter a question, wait a few seconds, and then watch a response appear faster than you can read it. Making the words appear twice as fast doesn&rsquo;t seem too useful.</p>
+
+        <p>But that is only one very small dimension of the matter:</p>
+        <ul>
+            <li>The speed of an AI model affects how many people can use it at once: You think serving ChatGPT to millions of users across the world, with little to no delay per prompt, is an easy task?</li>
+            <li>Surprisingly, research has shown that the output quality of language models (like ChatGPT, Claude, Gemini, etc.) dramatically improves with more &ldquo;thinking&rdquo; tokens generated, implying that within a time window: More speed &rArr; more tokens &rArr; more intelligent responses.</li>
+            <li>The use of AI models in many fields, whether it&rsquo;s language generation, voice applications, autonomous driving, and robotics, can be completely revolutionary or useless depending on the speed it operates at.</li>
+            <li>Modern &ldquo;agentic&rdquo; tasks require faster individual AI model calls, to reduce the delay accumulated from numerous model calls over a long period of time.</li>
+        </ul>
+
+        <h3 class="post-heading">What Happens When You Ask ChatGPT a Question?</h3>
+
+        <p>AI models have two main stages: training and inference.</p>
+
+        <p><strong>Training</strong> is the process of teaching a model to output high quality responses based on large amounts of data. This stage is a lot more glamorous, as you often hear companies talking about training a super large model, across thousands of GPUs in data centers, using the entire internet as a dataset.</p>
+
+        <p><strong>Inference</strong> is the process of using the trained model [1]. When you type a question into ChatGPT and receive an answer, that is inference. When an AI voice assistant listens to you and responds, that is inference. When the Tesla autopilot cameras on the car observe its surroundings to decide how to steer the car, that is inference.</p>
+
+        <p>For a company like ChatGPT that serves millions of users, inference does not happen once. It happens over and over again, at every time in the day, everyday, whenever someone sends in a prompt.</p>
+
+        <figure>
+            <img src="../assets/train_vs_inference.png" alt="NVIDIA diagram splitting the AI lifecycle into AI Training (data processing, train) and AI Inference (optimize, deploy, run).">
+            <figcaption>Figure 1: AI training and AI inference as two halves of one lifecycle. You train once, then run inference over and over. Reproduced from NVIDIA [7].</figcaption>
+        </figure>
+
+        <p>That distinction is important because making AI faster is not just about making one response type onto your screen more quickly. It is about making this entire process more efficient.</p>
+
+        <h3 class="post-heading">1. Faster AI Can Serve More People With the Same Hardware</h3>
+
+        <p>Obviously, if you can make a single request to the model to finish twice as fast, then you can complete twice as many requests in the same amount of time. But making every individual request twice as fast is not always possible. Two important measurements of AI speed are latency and throughput:</p>
+        <ul>
+            <li><strong>Latency</strong> is how long it takes to complete one request.</li>
+            <li><strong>Throughput</strong> is how much total work a system can complete over a period of time.</li>
+        </ul>
+
+        <figure>
+            <img src="../assets/throughput_vs_latency.png" alt="Diagram comparing throughput, the number of data packets arriving within one second, against latency, the time consumed to transfer a single packet.">
+            <figcaption>Figure 2: The two meanings of &ldquo;faster,&rdquo; illustrated with network traffic. Throughput is how much arrives per second, and latency is how long one item takes. AI serving faces the same split. Reproduced from ApprovedModems.org, as published in Zubair [8].</figcaption>
+        </figure>
+
+        <p>Imagine a coffee shop with five baristas and a near endless line of customers. Each barista normally works on one order at a time.</p>
+
+        <p>The easiest way to serve twice as many customers would be to make every barista complete each order twice as fast, but that is not always possible. For example, if a coffee needs thirty seconds to brew, the barista cannot just decide to make it brew in fifteen.</p>
+
+        <p>Another option is to hire five more baristas. With ten instead of five, the shop can serve more customers even if each individual order takes the same amount of time. But this requires twice as many workers and therefore more resources.</p>
+
+        <p>A better option is for the baristas to work more efficiently. Instead of waiting for one coffee to finish brewing before starting another order, a barista could begin preparing a second drink while the first one is still brewing. Now while each individual customer may wait about the same amount of time, each barista can complete more total orders in a day. The shop has increased its throughput without hiring more people.</p>
+
+        <p>AI companies face the same problem. One way to serve more users is to simply buy more GPUs, just like hiring more baristas. But GPUs are expensive, and adding more of them requires more hardware and infrastructure. It makes more sense to first figure out how to use existing GPUs as effectively as possible.</p>
+
+        <p>Researchers behind an AI serving system called vLLM demonstrated how important this can be. By improving how temporary model memory is managed during generation, vLLM was able to process around two to four times more requests than competing systems while maintaining a similar delay for individual users [3].</p>
+
+        <p>Individual users may not notice their responses arriving any faster, but the same hardware can serve far more users at once.</p>
+
+        <p>So faster AI is not always about making the words on your screen appear faster. It also means allowing the same hardware to serve more users at once, making the overall system faster.</p>
+
+        <h3 class="post-heading">2. Faster AI Can Spend More Time &ldquo;Thinking&rdquo; Without Making You Wait Longer</h3>
+
+        <p>When you solve a difficult math problem, you probably do not just look at it and immediately know the answer. You&rsquo;ll probably reason about the problem in your head, think through different solutions, and write down intermediate steps before reaching a conclusion.</p>
+
+        <p>Interestingly, language models can benefit from doing something similar.</p>
+
+        <p>You may have noticed that when you give a model a prompt, it sometimes says it is &ldquo;thinking&rdquo; before outputting a response. What is happening during that delay? The model is generating intermediate &ldquo;thinking&rdquo; tokens as it reasons through the problem before producing the response you actually see.</p>
+
+        <p>Researchers have found that allowing a language model to generate more of these thinking tokens, similar to an internal monologue or thinking out loud, can dramatically improve its performance on difficult reasoning problems. In a 2025 ICLR paper, researchers found that letting models generate more thinking tokens significantly improved the quality of their responses. In some experiments, a smaller model generating more thinking tokens even outperformed a model fourteen times larger [2].</p>
+
+        <p>So what does this have to do with speed?</p>
+
+        <p>In physics, one form of energy can be converted into another. Solar panels convert sunlight into electricity. If we improve the efficiency of solar panels, then the same amount of sunlight can produce more electricity.</p>
+
+        <p>AI inference has a similar relationship. Thinking tokens can lead to higher quality responses. If we improve inference speed, then a model can generate more thinking tokens in the same amount of time, potentially producing a higher quality response without making the user wait longer.</p>
+
+        <p>So faster AI doesn&rsquo;t just mean each user receives the same response sooner. Rather, it means that given the same time window, each user receives a response of higher quality.</p>
+
+        <figure>
+            <img src="../assets/cerebras_scaling_law.png" alt="Chart of the Cerebras scaling law showing response quality increasing as inference speed allows more thinking tokens within a fixed time window.">
+            <figcaption>Figure 3: The Cerebras scaling law. Within a fixed time budget, faster inference buys more thinking tokens, and more thinking tokens buy better answers. Reproduced from Lie and Wang [6].</figcaption>
+        </figure>
+
+        <h3 class="post-heading">3. Some AI Applications Actually Need to Be Fast</h3>
+
+        <p>A text chat is a forgiving way to interact with AI. The world doesn&rsquo;t end if ChatGPT takes two seconds instead of one second before responding. However, speed may be much more critical in other mediums of interacting with AI.</p>
+
+        <p>Consider a spoken conversation. It&rsquo;s very unnatural to talk to someone who waits a few seconds before responding to every sentence, even if their response is excellent. Google highlighted this problem when introducing Gemini 3.1 Flash Live, a model designed for real-time voice and visual interactions. The company specifically emphasizes low latency as an important part of making conversations with AI feel natural [5].</p>
+
+        <p>Voice is one example of a broader category of speed-critical AI applications, where being too slow can make the system much less useful, or even unusable.</p>
+
+        <p>Think about autonomous driving. A self-driving car operates in an environment that changes extremely quickly. Other cars move, pedestrians cross the street, traffic lights change, and unexpected obstacles appear. Milliseconds of response time literally separates an autonomous driving system from being safer than human drivers, and being life threatening to the passenger and other drivers/pedestrians on the road.</p>
+
+        <p>Robotics has the same problem. A robot interacting with the physical world needs to continuously respond to changes around it. If every decision comes with a long delay, even an intelligent robot can become impractical.</p>
+
+        <p>This is what makes speed so important in these applications. For a text chatbot, faster inference might simply mean less waiting. But for voice assistants, autonomous vehicles, robotics, and other real-time systems, speed can determine whether the application is at all relevant.</p>
+
+        <p>In speed-critical AI, inference speed is not just a convenience. It can be the difference between a useful system, and one that is useless or even potentially dangerous.</p>
+
+        <h3 class="post-heading">4. AI Agents Turn Minor Latency Into Major Delays</h3>
+
+        <p>A normal chatbot interaction is relatively simple:</p>
+        <p class="flow">Question &rarr; AI model &rarr; Answer</p>
+
+        <p>An AI agent can work differently. Instead of a single model call, an AI agent makes multiple calls to other AI models to handle subtasks, such as interacting with tools, examining the results, and deciding what to do next [4].</p>
+
+        <p>Imagine asking an AI agent to research several hotels and organize a trip. It might:</p>
+        <ol>
+            <li>Understand your request.</li>
+            <li>Search for hotels.</li>
+            <li>Read the results.</li>
+            <li>Compare options.</li>
+            <li>Search flight information.</li>
+            <li>Reconsider the plan.</li>
+            <li>Build an itinerary.</li>
+            <li>Produce its final answer.</li>
+        </ol>
+
+        <figure>
+            <img src="../assets/agent.png" alt="Diagram progressing from LLMs and chatbots that answer in a single turn, to assistants that perform multi step tasks, to agentic AI that plans, uses tools, remembers, and carries out goals.">
+            <figcaption>Figure 4: Chatbot vs. agent. As systems move from single turn answers to autonomous planning and tool use, one task stops being one model call. Reproduced from Sagentics [9], which in turn credits Goseeko.</figcaption>
+        </figure>
+
+        <p>Many of these steps can require another interaction with an AI model. Anthropic describes these kinds of systems as workflows and agents, and notes that while more complicated workflows may improve performance, they also increase latency and cost [4].</p>
+
+        <p>This creates a problem: A two second delay for a single model call is not very noticeable. But a two second delay repeated twenty times becomes forty seconds, which would probably make the user extremely frustrated.</p>
+
+        <p>This is one reason inference speed may become even more important as AI changes. Today, many people use AI by asking one question and receiving one response. Future agentic systems may spend minutes, hours, or even days completing large complicated tasks.</p>
+
+        <p>As every individual model interaction becomes faster, the improvement can accumulate across the entire run time. Shaving half a second off a single ChatGPT response is not important. But shaving half a second off fifty different model calls is much more noticeable.</p>
+
+        <h3 class="post-heading">A Quick Catalogue: Where Does AI Speed Actually Matter?</h3>
+
+        <p>Here is a simple way to think about it.</p>
+
+        <h4>1. Large AI Services</h4>
+        <p><em>Why speed matters: More users can share the same computing hardware.</em></p>
+        <p>Systems such as vLLM show that improving how inference is implemented can greatly increase throughput without requiring the same increase in hardware [3].</p>
+
+        <h4>2. Chatbots</h4>
+        <p><em>Why speed matters: Less waiting time for difficult questions.</em></p>
+        <p>For simple questions, generation speed isn&rsquo;t that important, as the model doesn&rsquo;t have much output anyways. The benefit becomes noticeable when tackling complicated problems, where outputting intermediate &ldquo;thinking&rdquo; tokens becomes necessary for a high quality response.</p>
+
+        <h4>3. Speed-Critical Applications</h4>
+        <p><em>Why speed matters: These applications become less useful, useless, or even dangerous if inference isn&rsquo;t fast enough.</em></p>
+        <p>Pauses during speech for voice applications, processing delays in autonomous vehicles, and response latency in robotics, dramatically impacts the effectiveness of these applications [5].</p>
+
+        <h4>4. AI Agents</h4>
+        <p><em>Why speed matters: One task may require many separate model calls.</em></p>
+        <p>Minor latency in individual model calls can accumulate into major delays when agentic workflows make numerous model calls and operate over a long period of time [4].</p>
+
+        <h3 class="post-heading">So, Why Does Fast AI Matter?</h3>
+
+        <p>When I first joined Cerebras Systems, I thought about performance mostly as a technical problem.</p>
+
+        <p>How many tokens can a system generate every second? How efficiently can hardware be used? How quickly can a model respond?</p>
+
+        <p>But those numbers only become interesting when they unlock the ability for AI to complete previously infeasible tasks.</p>
+        <ul>
+            <li>Faster inference can let the same hardware serve more users.</li>
+            <li>It can significantly improve the response quality of language models.</li>
+            <li>It can enable many AI use cases, like voice applications, autonomous driving, and robotics.</li>
+            <li>It can prevent minor latencies from accumulating into major delays across complicated AI agent workflows.</li>
+        </ul>
+
+        <p>That is why judging the importance of speed in AI inference based only on ChatGPT being able to type faster than you can read misses the bigger picture.</p>
+
+        <p>The goal is not simply to make words appear faster on your screen. The goal is to make each second of computing power accomplish more.</p>
+
+        <h3 class="post-heading">About Me</h3>
+
+        <p>I&rsquo;m Andrew Deng, a 2nd year CS student at the University of Waterloo. I&rsquo;m a second generation immigrant (my parents were originally from Chengdu, Sichuan, China), and I have a younger brother. Nevertheless, I was surrounded by the Chinese culture and community since I was a child, having grown up in Markham, Ontario, Canada.</p>
+
+        <p>I enjoy playing competitive online video games, such as League of Legends and Team Fight Tactics. I also try to go to the gym regularly, though I am pretty inconsistent, and even more inconsistent with my diet. But most of all, I enjoy hanging out with my friends.</p>
+
+        <p>I also have a dog named Bobby (I named him), who is a five year old Cockapoo, whom I absolutely adore.</p>
+
+        <figure class="figure-square">
+            <img src="../assets/bobby.jpg" alt="Bobby, my five year old Cockapoo.">
+            <figcaption>Bobby.</figcaption>
+        </figure>
+
+        <p>A bit more about me:</p>
+        <ul>
+            <li>I previously worked as a Research Engineer Intern at <a href="https://www.cerebras.ai/" target="_blank">Cerebras Systems</a> and a Software Engineering Intern at <a href="http://storytellers.ai/" target="_blank">Storytellers.ai</a>.</li>
+            <li>I first authored <a href="https://drive.google.com/file/d/1Ai0BQnm7_pdCFlDhLIMVusrbDrsqCG4U/view?usp=sharing" target="_blank">this machine learning research paper</a>.</li>
+            <li>I, interestingly, spent my first three study terms in three different programs: I transferred from Computer Engineering to Software Engineering to Computer Science.</li>
+            <li>I&rsquo;ve won a few hackathons.</li>
+            <li>I have a black belt in Karate.</li>
+        </ul>
+
+        <h3 class="post-heading">Want to Learn More?</h3>
+
+        <p>The next time you use an AI model, pay attention to where you are actually waiting.</p>
+
+        <p>Is the model generating text? Is it thinking before answering? Is it using several tools? Would the interaction still work if every step took five seconds longer?</p>
+
+        <p>If you want a simple introduction to what happens when an AI model is used, start with Google Cloud&rsquo;s explanation of AI inference in reference [1].</p>
+
+        <p>If you want to see a concrete example of how engineers can make AI systems serve dramatically more requests without simply buying more hardware, read the vLLM paper in reference [3].</p>
+
+        <p>And if you want to see why speed may matter even more as agentic workflows complete complicated tasks, read Anthropic&rsquo;s <em>Building Effective Agents</em> in reference [4].</p>
+
+        <h3 class="post-heading">References</h3>
+        <ol class="references">
+            <li>Google Cloud, &ldquo;What is AI inference?&rdquo; [Online]. Available: <a href="https://cloud.google.com/discover/what-is-ai-inference" target="_blank">https://cloud.google.com/discover/what-is-ai-inference</a>. [Accessed: Aug. 14, 2026].</li>
+            <li>C. Snell, J. Lee, K. Xu, and A. Kumar, &ldquo;Scaling LLM test-time compute optimally can be more effective than scaling parameters for reasoning,&rdquo; in <em>Proc. Int. Conf. Learn. Representations (ICLR)</em>, 2025. [Online]. Available: <a href="https://proceedings.iclr.cc/paper_files/paper/2025/hash/1b623663fd9b874366f3ce019fdfdd44-Abstract-Conference.html" target="_blank">https://proceedings.iclr.cc/paper_files/paper/2025/hash/1b623663fd9b874366f3ce019fdfdd44-Abstract-Conference.html</a>.</li>
+            <li>W. Kwon, Z. Li, S. Zhuang, Y. Sheng, L. Zheng, C. H. Yu, J. E. Gonzalez, H. Zhang, and I. Stoica, &ldquo;Efficient memory management for large language model serving with PagedAttention,&rdquo; in <em>Proc. 29th Symp. Operating Systems Principles (SOSP &rsquo;23)</em>, 2023, pp. 611&ndash;626, doi: 10.1145/3600006.3613165.</li>
+            <li>E. Schluntz and B. Zhang, &ldquo;Building effective agents,&rdquo; Anthropic, Dec. 19, 2024. [Online]. Available: <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">https://www.anthropic.com/engineering/building-effective-agents</a>. [Accessed: Aug. 14, 2026].</li>
+            <li>A. Fortin and T. Schaeff, &ldquo;Build real-time conversational agents with Gemini 3.1 Flash Live,&rdquo; Google, Mar. 26, 2026. [Online]. Available: <a href="https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-3-1-flash-live/" target="_blank">https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-3-1-flash-live/</a>. [Accessed: Aug. 14, 2026].</li>
+            <li>S. Lie and J. Wang, &ldquo;The Cerebras Scaling Law: Faster Inference Is Smarter AI,&rdquo; Cerebras Systems, Jun. 11, 2025. [Online]. Available: <a href="https://www.cerebras.ai/blog/the-cerebras-scaling-law-faster-inference-is-smarter-ai" target="_blank">https://www.cerebras.ai/blog/the-cerebras-scaling-law-faster-inference-is-smarter-ai</a>. [Accessed: Aug. 14, 2026].</li>
+            <li>K. Aubrey, &ldquo;What&rsquo;s the difference between deep learning training and inference?&rdquo; NVIDIA, Jul. 29, 2016 (updated Oct. 2025). [Online]. Available: <a href="https://blogs.nvidia.com/blog/difference-deep-learning-training-inference-ai/" target="_blank">https://blogs.nvidia.com/blog/difference-deep-learning-training-inference-ai/</a>. [Accessed: Aug. 14, 2026].</li>
+            <li>Zubair, &ldquo;Latency vs throughput,&rdquo; GoPenAI, May 20, 2024. [Online]. Available: <a href="https://blog.gopenai.com/latency-vs-throughput-e68949d77220" target="_blank">https://blog.gopenai.com/latency-vs-throughput-e68949d77220</a>. [Accessed: Aug. 14, 2026].</li>
+            <li>Sagentics, &ldquo;Chatbot vs agentic assistant: what&rsquo;s the actual difference,&rdquo; Sagentics, Aug. 1, 2026. [Online]. Available: <a href="https://sagentics.ai/blog/chatbot-vs-agentic-assistant" target="_blank">https://sagentics.ai/blog/chatbot-vs-agentic-assistant</a>. [Accessed: Aug. 14, 2026].</li>
+        </ol>
+
+        <h3 class="post-heading">Visual Credits</h3>
+        <ul class="credits">
+            <li>Figure 1. AI Training vs. AI Inference. Reproduced from NVIDIA, in Aubrey [7]. Supporting explanation adapted from Google Cloud [1].</li>
+            <li>Figure 2. Throughput vs. Latency. Reproduced from ApprovedModems.org, as published in Zubair [8]. Applied to AI serving using evidence from Kwon et al. [3].</li>
+            <li>Figure 3. The Cerebras Scaling Law. Reproduced from Lie and Wang [6]. Supporting evidence adapted from Snell et al. [2].</li>
+            <li>Figure 4. What Is Agentic AI? (Chatbot vs. Agent). Reproduced from Sagentics [9], which credits Goseeko as the original source. Agent workflow concept adapted from Schluntz and Zhang [4].</li>
+            <li>Photograph of Bobby. Author&rsquo;s own photograph, 2026.</li>
+        </ul>
+
+        <h3 class="post-heading">Myths vs. Facts</h3>
+        <p>For fun, here is a myths vs. facts section on common myths I&rsquo;ve heard about serving AI models, covering topics not discussed in the blog.</p>
+
+        <ul class="myths">
+            <li>
+                <span class="myth">Myth: Every AI request uses an entire GPU by itself.</span>
+                <span class="fact">Fact: AI hardware works on requests from multiple users at the same time. Serving systems try to organize these requests efficiently so that hardware is not sitting partially unused. This is one reason improving throughput can let the same hardware serve many more users.</span>
+            </li>
+            <li>
+                <span class="myth">Myth: Running the same AI model on different hardware changes how intelligent it is.</span>
+                <span class="fact">Fact: Faster hardware does not make the model worse. A model served on Cerebras hardware, GPUs, or other compatible hardware still uses the same learned parameters and produces the same outputs. The difference is how quickly and efficiently the underlying calculations are performed.</span>
+            </li>
+            <li>
+                <span class="myth">Myth: Once an AI model is trained, most of the expensive work is over.</span>
+                <span class="fact">Fact: Training is usually a huge one time cost, but inference happens every single time someone uses the model. For models that serve millions of requests over months or years, the total cost of running the model can eventually exceed the original cost of training it. This makes inference efficiency important throughout the model&rsquo;s entire lifetime.</span>
+            </li>
+            <li>
+                <span class="myth">Myth: Speed only matters for inference.</span>
+                <span class="fact">Fact: While this blog focuses on inference, speed is also extremely important during training. Modern AI models are trained on enormous datasets and can contain billions of parameters, so training them without major hardware and software optimizations would take far too long. Faster training also means doing more experiments, using more data, and reaching a finished model sooner.</span>
+            </li>
+            <li>
+                <span class="myth">Myth: You need an expensive GPU to run AI models yourself.</span>
+                <span class="fact">Fact: Not necessarily. Smaller or optimized AI models can run directly on laptops, phones, CPUs, integrated graphics, and other consumer hardware. A powerful GPU mainly allows you to run larger models or generate responses faster.</span>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

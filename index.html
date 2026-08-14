@@ -5,18 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Andrew Deng</title>
     <link rel="stylesheet" href="style.css">
+    <script src="theme.js"></script>
 </head>
 <body>
     <div id="maincontent">
-        <h2 style="margin-bottom:1.5rem;">Andrew Deng</h2>
+        <header class="site-header">
+            <div class="header-top">
+                <h2><a class="site-name" href="index.html">Andrew Deng</a></h2>
+                <button id="theme-toggle" class="theme-toggle" type="button">light mode</button>
+            </div>
+            <nav class="tabs">
+                <a class="tab active" href="index.html">home</a>
+                <a class="tab" href="writing/">writing</a>
+            </nav>
+        </header>
+
         <p>I study Computer Science at the University of Waterloo</p>
+
         <h3 class="section-title">Experiences:</h3>
         <ul class="experience-list">
             <li>Research Engineer Intern @ <a href="https://www.cerebras.ai/" target="_blank">Cerebras Systems</a></li>
             <li>Software Engineer Intern @ <a href="http://storytellers.ai/" target="_blank">Storytellers.ai</a></li>
-            <li>Software Developer @  <a href="https://mitechpro.com/" target="_blank">MiTech & Consulting</a></li>
         </ul>
-        
+
         <h3 class="section-title">Projects:</h3>
         <ul class="experience-list">
             <li><a href="https://github.com/willzeng274/dreamhouse" target="_blank">Dream House</a> (2nd Best Project Overall - Hack the Valley X)</li>
@@ -24,7 +35,7 @@
             <li><a href="https://github.com/ericli3690/WaterlooDates" target="_blank">WaterlooDates</a> (Runner-Up Best Use of Vellum - Hack the 6ix 2025)</li>
             <li><a href="https://github.com/AndrewDeng1/cuda" target="_blank">Deep Learning Library</a></li>
         </ul>
-        
+
         <h3 class="section-title">Contests:</h3>
         <ul class="experience-list">
             <li><a href="https://codeforces.com/profile/alhod" target="_blank">Codeforces</a> (peaked Expert, 1676)</li>
